@@ -23,6 +23,7 @@ function draw_image(image_id, x, y) {
 }
 
 // draw grid
+// todo: move this into a function for redraws
 for (let x = 0; x < map_width; x++) {
     for (let y = 0; y < map_height; y++) {
         context.rect(x * grid_size, y * grid_size, grid_size, grid_size);
@@ -30,4 +31,5 @@ for (let x = 0; x < map_width; x++) {
     }
 }
 
+// here for testing purposes
 draw_image("bush", 2, 2);
