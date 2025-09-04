@@ -82,7 +82,15 @@ function click_mode_add_object(object_id) {
 }
 
 function click_mode_cur_object() {
-    click_mode_add_object(selected_palette);
+    click_method = (event, x, y) => {
+        draw_image(selected_palette, x, y);
+    }
+    click_method_mid = (event, x, y) => {
+        debug('Middle Click');
+    }
+    click_method_right = (event, x, y) => {
+        debug('Right Click This should probably remove object?');
+    }
 }
 
 function click_mode_select() {
@@ -145,8 +153,7 @@ $(window).on("load", function() {
         }
     });
     $('input[type=radio][name="palette"]').on('change', function() {
-    selected_palette = $(this).val();
-        
+        selected_palette = $(this).val();
     });
     // console.log(x, y);
 });
