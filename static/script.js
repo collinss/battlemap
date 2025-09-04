@@ -8,6 +8,9 @@ const context = canvas.getContext("2d");
 const grid_size = 50;
 const map_width = 40;
 const map_height = 20;
+
+const object_layer = Array(map_width).fill().map(_ => Array(map_height).fill(''))
+
 canvas.width = map_width * grid_size;
 canvas.height = map_height * grid_size;
 
@@ -54,12 +57,13 @@ function draw_image(image_id, x, y) {
         image = document.createElement("img");
         image.id = image_id;
         image.src = "/static/images/" + image_id + ".png";
+        document.getElementById('images').appendChild(image);
     }
 
     // todo: do we want to make it so that assets are drawn only once all assets are loaded?
-    image.addEventListener("load", () => {
+    //image.addEventListener("load", () => {
         context.drawImage(image, x * grid_size + 1, y * grid_size + 1, grid_size - 2, grid_size - 2);
-    });
+    //});
 }
 
 /*********************************
@@ -83,13 +87,13 @@ function click_mode_add_object(object_id) {
 
 function click_mode_cur_object() {
     click_method = (event, x, y) => {
-        draw_image(selected_palette, x, y);
+        object_layer[x][y] = selected_palette;
     }
     click_method_mid = (event, x, y) => {
         debug('Middle Click');
     }
     click_method_right = (event, x, y) => {
-        debug('Right Click This should probably remove object?');
+        object_layer[x][y] = '';
     }
 }
 
@@ -102,11 +106,31 @@ function click_mode_select() {
 }
 
 // draw grid
-// todo: move this into a function for redraws
-for (let x = 0; x < map_width; x++) {
-    for (let y = 0; y < map_height; y++) {
-        context.rect(x * grid_size, y * grid_size, grid_size, grid_size);
-        context.stroke();
+function redraw() {
+    // Draw Grid
+    drawGrid();
+    drawObjectLayer();
+    //drawNPCLayer();
+    //drawPlayerLayer();
+    //drawSelectLayer();
+}
+
+function drawGrid() {
+    for (let x = 0; x < map_width; x++) {
+        for (let y = 0; y < map_height; y++) {
+            context.rect(x * grid_size, y * grid_size, grid_size, grid_size);
+            context.stroke();
+        }
+    }
+            // draw_image(selected_palette, x, y);
+}
+
+function drawObjectLayer() {
+    for (let x = 0; x < map_width; x++) {
+        for (let y = 0; y < map_height; y++) {
+            if (object_layer[x][y] !== '')
+                draw_image(object_layer[x][y],x,y);
+        }
     }
 }
 
@@ -123,6 +147,7 @@ $("#battlemap").on("mousedown", (event) => {
     else if (click_method_right && event.which === 3) {
         click_method_right(event, x, y);
     }
+    redraw();
     // console.log(x, y);
 });
 
@@ -160,3 +185,6 @@ $(window).on("load", function() {
 
 // Setup Default Tool
 click_mode_select();
+selected_palette = 'rock';
+
+redraw();
