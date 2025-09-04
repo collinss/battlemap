@@ -4,8 +4,8 @@
 
 #tools {
     position: fixed;
-    right: 0;
-    top: 0;
+    left: 0;
+    bottom: 0;
     background-color: white;
     width: 200px;
     height:100px;
@@ -16,7 +16,9 @@
     height: 100%;
     overflow-y: hidden;
 }
-
+#palette{
+    display: none;
+}
 ul.no-bullets {
   list-style-type: none; /* Remove bullets */
   padding: 0; /* Remove padding */

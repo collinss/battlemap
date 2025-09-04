@@ -12,7 +12,10 @@ canvas.width = map_width * grid_size;
 canvas.height = map_height * grid_size;
 
 let click_method = null;
+let click_method_mid = null;
+let click_method_right = null;
 
+let selected_palette = 'rock';
 /******* sidebar functions *******/
 
 /*********************************
@@ -78,6 +81,10 @@ function click_mode_add_object(object_id) {
     }
 }
 
+function click_mode_cur_object() {
+    click_mode_add_object(selected_palette);
+}
+
 function click_mode_select() {
     click_method = (event, x, y) => {
         debug('Select Not Implemented');
@@ -126,20 +133,23 @@ function getGridYFromWindowY(y) {
 
 $(window).on("load", function() {
     $('input[type=radio][name="tool"]').on('change', function() {
-    switch ($(this).val()) {
-        case 'select':
-            click_mode_select();
-        break;
-        case 'place':
-            click_mode_add_object($('input[type=radio][name=palette]').val());
-        break;
-    }
+        $('#palette').hide();
+        switch ($(this).val()) {
+            case 'select':
+                click_mode_select();
+            break;
+            case 'place':
+                click_mode_cur_object();
+                $('#palette').show();
+            break;
+        }
+    });
+    $('input[type=radio][name="palette"]').on('change', function() {
+    selected_palette = $(this).val();
+        
     });
     // console.log(x, y);
 });
-
-}
-)
 
 // Setup Default Tool
 click_mode_select();
