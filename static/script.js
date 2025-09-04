@@ -59,9 +59,6 @@ $("#battlemap").on("mousedown", (event) => {
     // console.log(x, y);
 });
 
-    // console.log(x, y);
-});
-
 // here for testing purposes
 click_mode_add_object("rock");
 
