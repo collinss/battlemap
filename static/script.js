@@ -12,6 +12,8 @@ canvas.width = map_width * grid_size;
 canvas.height = map_height * grid_size;
 
 let click_method = null;
+let click_method_mid = null;
+let click_method_right = null;
 
 function draw_image(image_id, x, y) {
     let image = document.getElementById(image_id);
@@ -32,6 +34,20 @@ function click_mode_add_object(object_id) {
     click_method = (event, x, y) => {
         draw_image(object_id, x, y);
     }
+    click_method_mid = (event, x, y) => {
+        debug('Middle Click');
+    }
+    click_method_right = (event, x, y) => {
+        debug('Right Click This should probably remove object?');
+    }
+}
+
+function click_mode_select() {
+    click_method = (event, x, y) => {
+        debug('Select Not Implemented');
+    }
+    click_method_mid = null;
+    click_method_right = null;
 }
 
 // draw grid
@@ -45,26 +61,49 @@ for (let x = 0; x < map_width; x++) {
 
 $("#battlemap").on("mousedown", (event) => {
     event.preventDefault();
-    const x = Math.floor(event.offsetX / grid_size);
-    const y = Math.floor(event.offsetY / grid_size);
+    const x = getGridXFromWindowX(event.offsetX);
+    const y = getGridYFromWindowY(event.offsetY);
     if (click_method && event.which === 1) {
         click_method(event, x, y);
     }
-    else if (event.which === 2) {
-        debug('Middle Click');
+    else if (click_method_mid && event.which === 2) {
+        click_method_mid(event, x, y);
     }
-    else if (event.which === 3) {
-        debug('Right Click');
+    else if (click_method_right && event.which === 3) {
+        click_method_right(event, x, y);
     }
     // console.log(x, y);
 });
 
+
+function getGridXFromWindowX(x) {
+    const mapWidth = $("#battlemap").width();
+    const map_canvas_ratio = (canvas.width) / mapWidth;
+    return Math.floor((map_canvas_ratio * x) / grid_size);
+}
+
+function getGridYFromWindowY(y) {
+    const mapHeight = $("#battlemap").height();
+    const map_canvas_ratio = (canvas.height) / mapHeight;
+    return Math.floor((map_canvas_ratio * y) / grid_size);
+}
+
+$(window).on("load", function() {
+    $('input[type=radio][name="tool"]').on('change', function() {
+    switch ($(this).val()) {
+        case 'select':
+            click_mode_select();
+        break;
+        case 'place':
+            click_mode_add_object($('input[type=radio][name=palette]').val());
+        break;
+    }
+    });
     // console.log(x, y);
 });
 
-// here for testing purposes
-click_mode_add_object("rock");
+}
+)
 
-draw_image("bush", 2, 2);
-draw_image("bush", 3, 1);
-draw_image("bush", 5, 5);
+// Setup Default Tool
+click_mode_select();

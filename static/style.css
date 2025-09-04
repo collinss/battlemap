@@ -1,0 +1,24 @@
+#debug {
+    position: fixed;
+}
+
+#tools {
+    position: fixed;
+    right: 0;
+    top: 0;
+    background-color: white;
+    width: 200px;
+    height:100px;
+}
+
+#battlemap {
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+ul.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
+}

@@ -9,10 +9,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-    <div id="debug" style="position: fixed;">Debug:</div>
-    <div style="overflow: scroll;">
+    <div id="debug">Debug:</div>
+    <div style="overflow: none;">
         <canvas id="battlemap" width="1000" height="1000" oncontextmenu="return false;"/>
     </div>
     <script src="static/script.js"></script>
+    <form>
+    <div id="tools">
+        <label><input type="radio" name="tool" value="select" checked="checked" />Select</label>
+        <label><input type="radio" name="tool" value="place" />Place</label>
+        <div id="palette">
+            <ul class="no-bullets">
+                <li><label><input type="radio" name="palette" value="rock" checked="checked"/>Rock</label></li>
+                <li><label><input type="radio" name="palette" value="bush"/>Bush</label></li>
+            </ul>
+        </div>
+    </div>
+    </form>
 </body>
 </html>
