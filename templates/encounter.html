@@ -6,12 +6,19 @@
     <title>Encounter</title>
     <link rel="stylesheet" href="static/style.css" />
     <link rel="icon" href="static/images/favicon.png" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" ></script>
 </head>
 <body>
     <div id="debug">Debug:</div>
-    <div style="overflow: none;">
+    <div class="content" >
         <canvas id="battlemap" width="1000" height="1000" oncontextmenu="return false;"/>
+    </div>
+    <div class="sidebar">
+        <div class="sidebar-view-selector">
+            <a id="edit-button" class="sidebar-button" onclick="switch_pane('edit');">Edit</a>
+            <a id="play-button" class="sidebar-button" onclick="switch_pane('play');">Play</a>
+        </div>
+        <div id="sidebar-view" />
     </div>
     <script src="static/script.js"></script>
     <form>

@@ -12,9 +12,38 @@ canvas.width = map_width * grid_size;
 canvas.height = map_height * grid_size;
 
 let click_method = null;
-let click_method_mid = null;
-let click_method_right = null;
 
+/******* sidebar functions *******/
+
+/*********************************
+ * function: switch_pane
+ *
+ * Switches the sidebar view to the given view
+ *
+ * param: view - the view to switch to
+ *********************************/
+function switch_pane(view) {
+    if (view === "edit") {
+        $("#edit-button").addClass("selected");
+        $("#play-button").removeClass("selected");
+        // todo: add edit pane
+    }
+    else if (view === "play") {
+        $("#edit-button").removeClass("selected");
+        $("#play-button").addClass("selected");
+        // todo: add play pane
+    }
+}
+
+/*********************************
+ * function: draw_image
+ *
+ * Draws an image on the canvas
+ *
+ * param: image_id - the id of the image to draw
+ * param: x - the x position of the image in grid coordinates
+ * param: y - the y position of the image in grid coordinates
+ *********************************/
 function draw_image(image_id, x, y) {
     let image = document.getElementById(image_id);
     if (!image) {
@@ -30,6 +59,13 @@ function draw_image(image_id, x, y) {
     });
 }
 
+/*********************************
+ * function: click_mode_add_object
+ *
+ * Sets the click mode to object placement
+ *
+ * param: object_id - the id of the object to place
+ *********************************/
 function click_mode_add_object(object_id) {
     click_method = (event, x, y) => {
         draw_image(object_id, x, y);
