@@ -1,3 +1,7 @@
+function debug(message){
+    $("#debug").text(message)
+}
+
 const canvas = document.getElementById("battlemap");
 const context = canvas.getContext("2d");
 
@@ -39,12 +43,22 @@ for (let x = 0; x < map_width; x++) {
     }
 }
 
-$("#battlemap").on("click", (event) => {
+$("#battlemap").on("mousedown", (event) => {
+    event.preventDefault();
     const x = Math.floor(event.offsetX / grid_size);
     const y = Math.floor(event.offsetY / grid_size);
-    if (click_method) {
+    if (click_method && event.which === 1) {
         click_method(event, x, y);
     }
+    else if (event.which === 2) {
+        debug('Middle Click');
+    }
+    else if (event.which === 3) {
+        debug('Right Click');
+    }
+    // console.log(x, y);
+});
+
     // console.log(x, y);
 });
 
