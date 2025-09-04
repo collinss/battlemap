@@ -13,6 +13,20 @@ canvas.height = map_height * grid_size;
 
 let click_method = null;
 
+// sidebar functions
+function switch_pane(view) {
+    if (view === "edit") {
+        $("#edit-button").addClass("selected");
+        $("#play-button").removeClass("selected");
+        // todo: add edit pane
+    }
+    else if (view === "play") {
+        $("#edit-button").removeClass("selected");
+        $("#play-button").addClass("selected");
+        // todo: add play pane
+    }
+}
+
 function draw_image(image_id, x, y) {
     let image = document.getElementById(image_id);
     if (!image) {
