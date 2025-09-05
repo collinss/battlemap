@@ -1,9 +1,9 @@
 function debug(message){
-    $("#debug").text(message)
+    $('#debug').text(message)
 }
 
-const canvas = document.getElementById("battlemap");
-const context = canvas.getContext("2d");
+const canvas = document.getElementById('battlemap');
+const context = canvas.getContext('2d');
 
 const grid_size = 50;
 const map_width = 40;
@@ -18,7 +18,8 @@ let click_method = null;
 let click_method_mid = null;
 let click_method_right = null;
 
-let selected_palette = 'rock';
+let image_cache = {};
+
 /******* sidebar functions *******/
 
 /*********************************
@@ -29,15 +30,45 @@ let selected_palette = 'rock';
  * param: view - the view to switch to
  *********************************/
 function switch_pane(view) {
-    if (view === "edit") {
-        $("#edit-button").addClass("selected");
-        $("#play-button").removeClass("selected");
+    if (view === 'edit') {
+        $('#edit-button').addClass('selected');
+        $('#play-button').removeClass('selected');
         // todo: add edit pane
     }
-    else if (view === "play") {
-        $("#edit-button").removeClass("selected");
-        $("#play-button").addClass("selected");
+    else if (view === 'play') {
+        $('#edit-button').removeClass('selected');
+        $('#play-button').addClass('selected');
         // todo: add play pane
+    }
+}
+
+/*********************************
+ * function: click_mode_add_object
+ *
+ * Sets the click mode to object placement
+ *
+ * param: object_id - the id of the object to place
+ *********************************/
+function click_mode_add_object(object_id) {
+    // console.log('click_mode_add_object: ' + object_id);
+    click_method = (event, x, y) => {
+        let needs_redraw = false;
+        if (object_layer[x][y] == object_id) {
+            object_layer[x][y] = '';
+            needs_redraw = true;
+        }
+        else {
+            if (object_layer[x][y] == '') {
+                draw_image(object_id, x, y);
+            } else {
+                needs_redraw = true;
+            }
+
+            object_layer[x][y] = object_id;
+        }
+
+        if (needs_redraw)
+            redraw_cell(x, y);
     }
 }
 
@@ -51,70 +82,46 @@ function switch_pane(view) {
  * param: y - the y position of the image in grid coordinates
  *********************************/
 function draw_image(image_id, x, y) {
+    // console.log(image_id, x, y);
     let image = document.getElementById(image_id);
-    if (!image) {
-        // if the image isn't already cached in the dom, do it now
-        image = document.createElement("img");
+    if (image) {
+        // if the image isn't already cached, do it now
+        image = document.createElement('img');
         image.id = image_id;
-        image.src = "/static/images/" + image_id + ".png";
-        document.getElementById('images').appendChild(image);
+        image.src = '/static/images/' + image_id + '.png';
+        image_cache[image_id] = image;
+        // document.getElementById('images').appendChild(image);
     }
 
     // todo: do we want to make it so that assets are drawn only once all assets are loaded?
-    //image.addEventListener("load", () => {
+    image.addEventListener('load', () => {
         context.drawImage(image, x * grid_size + 1, y * grid_size + 1, grid_size - 2, grid_size - 2);
-    //});
+    });
 }
 
 /*********************************
- * function: click_mode_add_object
+ * function: redraw_cell
  *
- * Sets the click mode to object placement
+ * Redraws a single cell in the grid
  *
- * param: object_id - the id of the object to place
+ * param: x - the x position of the cell in grid coordinates
+ * param: y - the y position of the cell in grid coordinates
  *********************************/
-function click_mode_add_object(object_id) {
-    click_method = (event, x, y) => {
-        draw_image(object_id, x, y);
-    }
-    click_method_mid = (event, x, y) => {
-        debug('Middle Click');
-    }
-    click_method_right = (event, x, y) => {
-        debug('Right Click This should probably remove object?');
-    }
+function redraw_cell(x, y) {
+    context.fillStyle = 'white';
+    context.fillRect(x * grid_size, y * grid_size, grid_size, grid_size);
+    context.strokeStyle = 'black';
+    context.strokeRect(x * grid_size, y * grid_size, grid_size, grid_size);
+    if (object_layer[x][y])
+        draw_image(object_layer[x][y], x, y);
 }
 
-function click_mode_cur_object() {
-    click_method = (event, x, y) => {
-        object_layer[x][y] = selected_palette;
-    }
-    click_method_mid = (event, x, y) => {
-        debug('Middle Click');
-    }
-    click_method_right = (event, x, y) => {
-        object_layer[x][y] = '';
-    }
-}
-
-function click_mode_select() {
-    click_method = (event, x, y) => {
-        debug('Select Not Implemented');
-    }
-    click_method_mid = null;
-    click_method_right = null;
-}
-
-// draw grid
-function redraw() {
-    // Draw Grid
-    drawGrid();
-    drawObjectLayer();
-    //drawNPCLayer();
-    //drawPlayerLayer();
-    //drawSelectLayer();
-}
-
+/*********************************
+ * function: drawGrid
+ *
+ * Draws the grid on the entire canvas. This function should only be used during initial loading or if the entire map
+ * needs to be redrawn for some reason. Instead, use redraw_cell() to redraw individual cells that need to be updated.
+ *********************************/
 function drawGrid() {
     for (let x = 0; x < map_width; x++) {
         for (let y = 0; y < map_height; y++) {
@@ -122,19 +129,55 @@ function drawGrid() {
             context.stroke();
         }
     }
-            // draw_image(selected_palette, x, y);
 }
 
+/*********************************
+ * function: drawObjectLayer
+ *
+ * Draws the object layer on the entire canvas. This function should only be used during initial loading or if the
+ * entire map needs to be redrawn for some reason. Instead, use redraw_cell() to redraw individual cells that need to
+ * be updated.
+ *********************************/
 function drawObjectLayer() {
     for (let x = 0; x < map_width; x++) {
         for (let y = 0; y < map_height; y++) {
             if (object_layer[x][y] !== '')
-                draw_image(object_layer[x][y],x,y);
+                draw_image(object_layer[x][y], x, y);
         }
     }
 }
 
-$("#battlemap").on("mousedown", (event) => {
+/*********************************
+ * function: getGridXFromWindowX
+ *
+ * Converts window coordinates to grid coordinates
+ *
+ * param: x - the x position in window coordinates
+ * returns: the x position in grid coordinates
+ *********************************/
+function getGridXFromWindowX(x) {
+    const mapWidth = $('#battlemap').width();
+    const map_canvas_ratio = (canvas.width) / mapWidth;
+
+    return Math.floor((map_canvas_ratio * x) / grid_size);
+}
+
+/*********************************
+ * function: getGridYFromWindowY
+ *
+ * Converts window coordinates to grid coordinates
+ *
+ * param: y - the y position in window coordinates
+ * returns: the y position in grid coordinates
+ *********************************/
+function getGridYFromWindowY(y) {
+    const mapHeight = $('#battlemap').height();
+    const map_canvas_ratio = (canvas.height) / mapHeight;
+    return Math.floor((map_canvas_ratio * y) / grid_size);
+}
+
+/* EVENT HANDLERS */
+$('#battlemap').on('mousedown', (event) => {
     event.preventDefault();
     const x = getGridXFromWindowX(event.offsetX);
     const y = getGridYFromWindowY(event.offsetY);
@@ -147,44 +190,19 @@ $("#battlemap").on("mousedown", (event) => {
     else if (click_method_right && event.which === 3) {
         click_method_right(event, x, y);
     }
-    redraw();
     // console.log(x, y);
 });
 
-
-function getGridXFromWindowX(x) {
-    const mapWidth = $("#battlemap").width();
-    const map_canvas_ratio = (canvas.width) / mapWidth;
-    return Math.floor((map_canvas_ratio * x) / grid_size);
-}
-
-function getGridYFromWindowY(y) {
-    const mapHeight = $("#battlemap").height();
-    const map_canvas_ratio = (canvas.height) / mapHeight;
-    return Math.floor((map_canvas_ratio * y) / grid_size);
-}
-
-$(window).on("load", function() {
-    $('input[type=radio][name="tool"]').on('change', function() {
-        $('#palette').hide();
-        switch ($(this).val()) {
-            case 'select':
-                click_mode_select();
-            break;
-            case 'place':
-                click_mode_cur_object();
-                $('#palette').show();
-            break;
-        }
-    });
+$(window).on('load', function() {
     $('input[type=radio][name="palette"]').on('change', function() {
-        selected_palette = $(this).val();
+        click_mode_add_object($(this).val());
     });
-    // console.log(x, y);
+
+    drawGrid();
+    drawObjectLayer();
+
+    // Setup Default Tool
+    click_mode_add_object('rock');
+    $('#rock').click();
 });
 
-// Setup Default Tool
-click_mode_select();
-selected_palette = 'rock';
-
-redraw();

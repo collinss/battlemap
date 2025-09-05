@@ -15,22 +15,22 @@
     </div>
     <div class="sidebar">
         <div class="sidebar-view-selector">
-            <a id="edit-button" class="sidebar-button" onclick="switch_pane('edit');">Edit</a>
-            <a id="play-button" class="sidebar-button" onclick="switch_pane('play');">Play</a>
+            <div id="edit-button" class="sidebar-button" onclick="switch_pane('edit');">Edit</div>
+            <div id="play-button" class="sidebar-button" onclick="switch_pane('play');">Play</div>
         </div>
-        <div id="sidebar-view" />
+        <div id="sidebar-view" >
+            <div id="edit-pane">
+                <label>
+                    <input type="radio" name="palette" value="rock" checked="checked"/>
+                    <img id="rock" src="static/images/rock.png" />
+                </label>
+                <label>
+                    <input type="radio" name="palette" value="bush" checked="checked"/>
+                    <img id="bush" src="static/images/bush.png" />
+                </label>
+            </div>
+        </div>
     </div>
     <script src="static/script.js"></script>
-    <div id="tools">
-        <label><input type="radio" name="tool" value="select" checked="checked" />Select</label>
-        <label><input type="radio" name="tool" value="place" />Place</label>
-        <div id="palette">
-            <ul class="no-bullets">
-                <li><label><input type="radio" name="palette" value="rock" checked="checked"/>Rock</label></li>
-                <li><label><input type="radio" name="palette" value="bush"/>Bush</label></li>
-            </ul>
-        </div>
-    </div>
-    <div id="images" style="display:none;"></div>
 </body>
 </html>
