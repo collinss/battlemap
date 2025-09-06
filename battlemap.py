@@ -5,13 +5,19 @@ app = Flask(__name__)
 
 current_encounter = None
 
+TERRAIN_OBJECTS = [
+    'rock',
+    'bush',
+    'tree'
+]
+
 @app.route('/')
 def index():
-    return render_template('encounter.html')
+    return render_template('encounter.html', object_ids=TERRAIN_OBJECTS)
 
 @app.route('/<encounter_name>')
 def encounter(encounter_name):
-    return render_template('encounter.html', encounter_name=encounter_name)
+    return render_template('encounter.html', object_ids=TERRAIN_OBJECTS, encounter_name=encounter_name)
 
 def get_battlemap_info(encounter_name):
     with sqlite3.connect(f'encounters/{encounter_name}.db') as connection:

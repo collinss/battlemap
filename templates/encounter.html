@@ -24,14 +24,12 @@
         </div>
         <div id="sidebar-view" >
             <div id="edit-pane">
+                {% for object_id in object_ids %}
                 <label>
-                    <input type="radio" name="palette" value="rock" checked="checked"/>
-                    <img id="rock" src="static/images/rock.png" />
+                    <input type="radio" name="palette" value="{{object_id}}"/>
+                    <img id="{{object_id}}" src="static/images/{{object_id}}.png" />
                 </label>
-                <label>
-                    <input type="radio" name="palette" value="bush" checked="checked"/>
-                    <img id="bush" src="static/images/bush.png" />
-                </label>
+                {% endfor %}
             </div>
         </div>
     </div>
