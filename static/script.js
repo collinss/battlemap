@@ -30,6 +30,7 @@ let image_cache = {};
  * param: view - the view to switch to
  *********************************/
 function switch_pane(view) {
+    // console.log(view);
     if (view === 'edit') {
         $('#edit-button').addClass('selected');
         $('#play-button').removeClass('selected');
@@ -198,11 +199,16 @@ $(window).on('load', function() {
         click_mode_add_object($(this).val());
     });
 
+    $('input[type=radio][name="sidebar-switcher"]').on('change', function() {
+        switch_pane($(this).val());
+    });
+
     drawGrid();
     drawObjectLayer();
 
     // Setup Default Tool
     click_mode_add_object('rock');
     $('#rock').click();
+    $('#edit').click();
 });
 

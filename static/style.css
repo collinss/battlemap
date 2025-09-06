@@ -61,11 +61,11 @@ ul.no-bullets {
 }
 
 /***************************************
- *           SIDEBAR BUTTONS           *
+ *    SIDEBAR VIEW SWITCHER BUTTONS    *
  ***************************************/
 
 /* Sidebar Button Base */
-.sidebar-button {
+.sidebar-view-button {
     padding: 2px 8px 2px 8px;
     text-decoration: none;
     font-size: 20px;
@@ -80,26 +80,27 @@ ul.no-bullets {
 }
 
 /* Sidebar Buttons: hover */
-.sidebar-button:hover {
+.sidebar-view-button:hover {
     background-color: var(--button-hover-background-color);
 }
 
 /* Sidebar Buttons: selected */
-.sidebar-button.selected {
+.sidebar-view-button:has([type=radio]:checked) {
     background-color: var(--button-selected-background-color);
 }
 
 /* Sidebar Buttons: selected, hover */
-.sidebar-button.selected:hover {
+.sidebar-view-button:has([type=radio]:checked):hover {
     background-color: var(--button-selected-hover-background-color);
 }
 
 /***************************************
- * PALETTE SWITCHER BUTTONS            *
+ *      PALETTE SWITCHER BUTTONS       *
  ***************************************/
 
 /* Hide Radio Button */
-[type=radio] {
+.sidebar-view-button [type=radio],
+#edit-pane [type=radio] {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -107,7 +108,7 @@ ul.no-bullets {
 }
 
 /* Button */
-[type=radio] + img {
+#edit-pane [type=radio] + img {
     border: 2px solid var(--button-border-color);
     border-radius: 3px;
     background-color: var(--button-background-color);
@@ -116,17 +117,17 @@ ul.no-bullets {
 }
 
 /* Button Hover */
-[type=radio] + img:hover {
+#edit-pane [type=radio] + img:hover {
     background-color: var(--button-hover-background-color);
 }
 
 /* Selected Button */
-[type=radio]:checked + img {
+#edit-pane [type=radio]:checked + img {
     background-color: var(--button-selected-background-color);
 }
 
 /* Selected Button, Hover */
-[type=radio]:checked + img:hover {
+#edit-pane [type=radio]:checked + img:hover {
     background-color: var(--button-selected-hover-background-color);
 }
 

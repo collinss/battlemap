@@ -15,8 +15,12 @@
     </div>
     <div class="sidebar">
         <div class="sidebar-view-selector">
-            <div id="edit-button" class="sidebar-button" onclick="switch_pane('edit');">Edit</div>
-            <div id="play-button" class="sidebar-button" onclick="switch_pane('play');">Play</div>
+            <label class="sidebar-view-button">
+                <input id="edit" type="radio" name="sidebar-switcher" value="edit">Edit</input>
+            </label>
+            <label class="sidebar-view-button">
+                <input id="play" type="radio" name="sidebar-switcher" value="play">Play</input>
+            </label>
         </div>
         <div id="sidebar-view" >
             <div id="edit-pane">
