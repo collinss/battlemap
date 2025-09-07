@@ -17,7 +17,9 @@ canvas.height = map_height * grid_size;
 let click_method = null;
 let click_method_mid = null;
 let click_method_right = null;
+let mouse_move_method = null;
 
+let left_down_time = false;
 let image_cache = {};
 
 /******* sidebar functions *******/
@@ -54,11 +56,11 @@ function click_mode_add_object(object_id) {
     // console.log('click_mode_add_object: ' + object_id);
     click_method = (event, x, y) => {
         let needs_redraw = false;
-        if (object_layer[x][y] == object_id) {
-            object_layer[x][y] = '';
-            needs_redraw = true;
-        }
-        else {
+        // if (object_layer[x][y] == object_id) {
+        //     object_layer[x][y] = '';
+        //     needs_redraw = true;
+        // }
+        // else {
             if (object_layer[x][y] == '') {
                 draw_image(object_id, x, y);
             } else {
@@ -66,6 +68,34 @@ function click_mode_add_object(object_id) {
             }
 
             object_layer[x][y] = object_id;
+        // }
+
+        if (needs_redraw)
+            redraw_cell(x, y);
+    }
+    mouse_move_method = (event, x, y) => {
+        if (left_down_time !== false && event.which !== 1)
+            left_down_time = false;
+        if (event.which == 1
+            && left_down_time !== false
+            && ((Date.now() - left_down_time) > 50)
+            && object_layer[x][y] != object_id)
+        {
+            let needs_redraw = false;
+            if (object_layer[x][y] == '')
+                draw_image(object_id, x, y);
+            else if (object_layer[x][y] != object_id)
+                needs_redraw = true;
+            object_layer[x][y] = object_id;
+            if (needs_redraw)
+                redraw_cell(x, y);
+        }
+    }
+    click_method_mid = (event, x, y) => {
+        let needs_redraw = false;
+        if (object_layer[x][y] != '') {
+            object_layer[x][y] = '';
+            needs_redraw = true;
         }
 
         if (needs_redraw)
@@ -192,6 +222,21 @@ $('#battlemap').on('mousedown', (event) => {
         click_method_right(event, x, y);
     }
     // console.log(x, y);
+    left_down_time = Date.now();
+});
+
+$('#battlemap').on('mouseup', (event) => {
+    left_down_time = false;
+});
+
+$('#battlemap').on('mousemove', (event) => {
+    const x = getGridXFromWindowX(event.offsetX);
+    const y = getGridYFromWindowY(event.offsetY);
+
+    $('#coords').text(x + ', '+ y);
+    if (mouse_move_method) {
+        mouse_move_method(event, x, y);
+    }
 });
 
 $(window).on('load', function() {
