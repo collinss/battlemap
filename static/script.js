@@ -45,6 +45,22 @@ function switch_pane(view) {
     }
 }
 
+function place_object(object_id, x, y, overwrite) {
+    let needs_redraw = false;
+    if (object_layer[x][y] !== object_id) {
+        if (object_layer[x][y] == '') {
+            draw_image(object_id, x, y);
+            object_layer[x][y] = object_id;
+        } else if (overwrite) {
+            needs_redraw = true;
+            object_layer[x][y] = object_id;
+        }
+
+        if (needs_redraw)
+            redraw_cell(x, y);
+    }
+}
+
 /*********************************
  * function: click_mode_add_object
  *
@@ -55,40 +71,38 @@ function switch_pane(view) {
 function click_mode_add_object(object_id) {
     // console.log('click_mode_add_object: ' + object_id);
     click_method = (event, x, y) => {
-        let needs_redraw = false;
+        place_object(object_id, x, y, true);
+        // let needs_redraw = false;
         // if (object_layer[x][y] == object_id) {
         //     object_layer[x][y] = '';
         //     needs_redraw = true;
         // }
         // else {
-            if (object_layer[x][y] == '') {
-                draw_image(object_id, x, y);
-            } else {
-                needs_redraw = true;
-            }
+        //     if (object_layer[x][y] == '') {
+        //         draw_image(object_id, x, y);
+        //     } else {
+        //         needs_redraw = true;
+        //     }
 
-            object_layer[x][y] = object_id;
+        //     object_layer[x][y] = object_id;
         // }
 
-        if (needs_redraw)
-            redraw_cell(x, y);
+        // if (needs_redraw)
+        //     redraw_cell(x, y);
     }
     mouse_move_method = (event, x, y) => {
+        // Reset timer if event.which is left mouse button.
+        // Might need to adjust in case of other buttons being held at the same time.
         if (left_down_time !== false && event.which !== 1)
             left_down_time = false;
+
+        // Timer might not be necessary if we don't mind it being a little bit slippery.
+        // I just thought we might want to avoid accidental click drag placement on multiple squares
+        // Time limit might need fine tuning if we keep it.
         if (event.which == 1
             && left_down_time !== false
-            && ((Date.now() - left_down_time) > 50)
-            && object_layer[x][y] != object_id)
-        {
-            let needs_redraw = false;
-            if (object_layer[x][y] == '')
-                draw_image(object_id, x, y);
-            else if (object_layer[x][y] != object_id)
-                needs_redraw = true;
-            object_layer[x][y] = object_id;
-            if (needs_redraw)
-                redraw_cell(x, y);
+            && ((Date.now() - left_down_time) > 70)) {
+            place_object(object_id,x,y, false);
         }
     }
     click_method_mid = (event, x, y) => {
