@@ -14,12 +14,9 @@ const object_layer = Array(map_width).fill().map(_ => Array(map_height).fill('')
 canvas.width = map_width * grid_size;
 canvas.height = map_height * grid_size;
 
-let click_method = null;
-let click_method_mid = null;
-let click_method_right = null;
-let mouse_move_method = null;
+let left_button_pressed = false;
+let palette_selected_item = null;
 
-let left_down_time = false;
 let image_cache = {};
 
 /******* sidebar functions *******/
@@ -45,76 +42,34 @@ function switch_pane(view) {
     }
 }
 
-function place_object(object_id, x, y, overwrite) {
-    let needs_redraw = false;
-    if (object_layer[x][y] !== object_id) {
-        if (object_layer[x][y] == '') {
-            draw_image(object_id, x, y);
-            object_layer[x][y] = object_id;
-        } else if (overwrite) {
-            needs_redraw = true;
-            object_layer[x][y] = object_id;
-        }
-
-        if (needs_redraw)
-            redraw_cell(x, y);
-    }
-}
-
 /*********************************
- * function: click_mode_add_object
+ * function: place_or_remove_object
  *
- * Sets the click mode to object placement
+ * Switches the sidebar view to the given view
  *
- * param: object_id - the id of the object to place
+ * param: x - the x position in grid coordinates
+ * param: y - the y position in grid coordinates
  *********************************/
-function click_mode_add_object(object_id) {
-    // console.log('click_mode_add_object: ' + object_id);
-    click_method = (event, x, y) => {
-        place_object(object_id, x, y, true);
-        // let needs_redraw = false;
-        // if (object_layer[x][y] == object_id) {
-        //     object_layer[x][y] = '';
-        //     needs_redraw = true;
-        // }
-        // else {
-        //     if (object_layer[x][y] == '') {
-        //         draw_image(object_id, x, y);
-        //     } else {
-        //         needs_redraw = true;
-        //     }
+function place_or_remove_object(x, y) {
+    // there's no point in doing anything if they match (probably from a drag event)
+    if (object_layer[x][y] == palette_selected_item) return;
 
-        //     object_layer[x][y] = object_id;
-        // }
+    let overwrite = $('#overwrite').is(':checked');
 
-        // if (needs_redraw)
-        //     redraw_cell(x, y);
-    }
-    mouse_move_method = (event, x, y) => {
-        // Reset timer if event.which is left mouse button.
-        // Might need to adjust in case of other buttons being held at the same time.
-        if (left_down_time !== false && event.which !== 1)
-            left_down_time = false;
-
-        // Timer might not be necessary if we don't mind it being a little bit slippery.
-        // I just thought we might want to avoid accidental click drag placement on multiple squares
-        // Time limit might need fine tuning if we keep it.
-        if (event.which == 1
-            && left_down_time !== false
-            && ((Date.now() - left_down_time) > 70)) {
-            place_object(object_id,x,y, false);
-        }
-    }
-    click_method_mid = (event, x, y) => {
-        let needs_redraw = false;
+    // remove is remove, regardless of which options are selected
+    if (palette_selected_item == 'remove') {
         if (object_layer[x][y] != '') {
             object_layer[x][y] = '';
-            needs_redraw = true;
         }
+    } else {
+        // don't overwrite if the option is not checked
+        if (object_layer[x][y] !== '' && !overwrite) return;
 
-        if (needs_redraw)
-            redraw_cell(x, y);
+        object_layer[x][y] = palette_selected_item;
     }
+
+    // always redraw the cell unless nothing changed
+    redraw_cell(x, y);
 }
 
 /*********************************
@@ -226,21 +181,41 @@ $('#battlemap').on('mousedown', (event) => {
     event.preventDefault();
     const x = getGridXFromWindowX(event.offsetX);
     const y = getGridYFromWindowY(event.offsetY);
-    if (click_method && event.which === 1) {
-        click_method(event, x, y);
-    }
-    else if (click_method_mid && event.which === 2) {
-        click_method_mid(event, x, y);
-    }
-    else if (click_method_right && event.which === 3) {
-        click_method_right(event, x, y);
-    }
     // console.log(x, y);
-    left_down_time = Date.now();
+
+    let edit_mode = $('#edit').prop('checked');
+
+    switch (event.which) {
+        case 1: // left mouse button
+            if (edit_mode) {
+                place_or_remove_object(x, y);
+            }
+            left_button_pressed = true;
+
+            break;
+
+        case 2: // middle mouse button
+            if (edit_mode) {
+                let needs_redraw = false;
+                if (object_layer[x][y] != '') {
+                    object_layer[x][y] = '';
+                    needs_redraw = true;
+                }
+
+                redraw_cell(x, y);
+            }
+
+            break;
+
+        case 3: // right mouse button
+            // not implemented: scroll map
+
+            break;
+    }
 });
 
 $('#battlemap').on('mouseup', (event) => {
-    left_down_time = false;
+    left_button_pressed = false;
 });
 
 $('#battlemap').on('mousemove', (event) => {
@@ -248,14 +223,17 @@ $('#battlemap').on('mousemove', (event) => {
     const y = getGridYFromWindowY(event.offsetY);
 
     $('#coords').text(x + ', '+ y);
-    if (mouse_move_method) {
-        mouse_move_method(event, x, y);
+
+    let edit_mode = $('#edit').prop('checked');
+    if (edit_mode && left_button_pressed) {
+        place_or_remove_object(x, y);
     }
 });
 
 $(window).on('load', function() {
     $('input[type=radio][name="palette"]').on('change', function() {
-        click_mode_add_object($(this).val());
+        // console.log($(this).val());
+        palette_selected_item = $(this).val();
     });
 
     $('input[type=radio][name="sidebar-switcher"]').on('change', function() {
@@ -266,7 +244,8 @@ $(window).on('load', function() {
     drawObjectLayer();
 
     // Setup Default Tool
-    click_mode_add_object('rock');
+    // click_mode_add_object('rock');
+    palette_selected_item = 'rock';
     $('#rock').click();
     $('#edit').click();
 });

@@ -27,12 +27,22 @@
         </div>
         <div id="sidebar-view" >
             <div id="edit-pane">
-                {% for object_id in object_ids %}
-                <label>
-                    <input type="radio" name="palette" value="{{object_id}}"/>
-                    <img id="{{object_id}}" src="static/images/{{object_id}}.png" />
-                </label>
-                {% endfor %}
+                <div id="palette">
+                    <label title="remove">
+                        <input type="radio" name="palette" value="remove"/>
+                        <img id="remove" src="static/images/remove.png" />
+                    </label>
+                    {% for object_id in object_ids %}
+                    <label title="{{object_id}}">
+                        <input type="radio" name="palette" value="{{object_id}}"/>
+                        <img id="{{object_id}}" src="static/images/{{object_id}}.png" />
+                    </label>
+                    {% endfor %}
+                </div>
+                <div id="palette-options">
+                    <input id="overwrite" type="checkbox" name="overwrite" checked="true"/>
+                    <label for="overwrite">Overwrite</label>
+                </div>
             </div>
         </div>
     </div>
