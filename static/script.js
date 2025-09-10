@@ -176,6 +176,19 @@ function getGridYFromWindowY(y) {
     return Math.floor((map_canvas_ratio * y) / grid_size);
 }
 
+/*********************************
+ * function: place_random
+ *
+ * Places a random object in the object layer
+ *
+ *********************************/
+function place_random() {
+    let x = Math.floor(Math.random() * map_width);
+    let y = Math.floor(Math.random() * map_height);
+
+    place_or_remove_object(x, y);
+}
+
 /* EVENT HANDLERS */
 $('#battlemap').on('mousedown', (event) => {
     event.preventDefault();

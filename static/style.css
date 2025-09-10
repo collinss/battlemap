@@ -45,7 +45,6 @@ ul.no-bullets {
     right: 0;
     background-color: #ebebef;
     overflow-x: hidden;
-    /*padding-top: 20px;*/
     border-left: 1px solid #ccd;
 }
 
@@ -133,6 +132,25 @@ ul.no-bullets {
  ***************************************/
 #palette-options {
     border-top: 1.5px solid #ccd;
+    padding: 4px 4px;
+}
+
+/* Sidebar-buttons */
+.action-button {
+    padding: 4px 10px 4px 10px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #333;
+    /*width: 42%;*/
+    border: 1.5px solid var(--button-border-color);
+    background-color: var(--button-background-color);
+    margin: 10px 7px;
+    text-align: center;
+    border-radius: 3px;
+}
+
+.action-button:hover {
+    background-color: var(--button-hover-background-color);
 }
 
 /* Battlemap content */
